@@ -3,6 +3,9 @@ package utils
 import "github.com/spf13/viper"
 
 type Config struct {
+	TmdbAPIKey             string `mapstructure:"TMDB_API_KEY"`
+	TmdbAPIReadAccessToken string `mapstructure:"TMDB_API_READ_ACCESS_TOKEN"`
+	MongoDbConnectionURI   string `mapstructure:"MONGODB_CONNECTION_URI"`
 }
 
 // LoadConfig loads the configuration from the given path
