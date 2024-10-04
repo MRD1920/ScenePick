@@ -12,8 +12,8 @@ import (
 
 type DBConfigMgr struct {
 	MongoClient *mongo.Client
-	ctx         context.Context
-	cancel      context.CancelFunc
+	Ctx         context.Context
+	Cancel      context.CancelFunc
 }
 
 func ConnectToMongoDB(MongoConnectionURI string) (*DBConfigMgr, error) {
@@ -26,6 +26,7 @@ func ConnectToMongoDB(MongoConnectionURI string) (*DBConfigMgr, error) {
 
 	clientOptions := options.Client().ApplyURI(uri)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, clientOptions)
 
@@ -41,6 +42,6 @@ func ConnectToMongoDB(MongoConnectionURI string) (*DBConfigMgr, error) {
 	}
 
 	fmt.Println("Connected to MongoDB !!")
-	return &DBConfigMgr{MongoClient: client, ctx: ctx, cancel: cancel}, nil
+	return &DBConfigMgr{MongoClient: client, Ctx: ctx, Cancel: cancel}, nil
 
 }

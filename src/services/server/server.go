@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mrd1920/ScenePick/src/controllers"
+	migrate "github.com/mrd1920/ScenePick/src/controllers/Migrate"
+
 	DBConfig "github.com/mrd1920/ScenePick/src/db"
 	"github.com/mrd1920/ScenePick/src/utils"
 )
@@ -20,7 +22,7 @@ func NewServer(config utils.Config) (*Server, error) {
 		Config: config,
 	}
 
-	server.setupRouter()
+	server.SetupRouter()
 	MongoDbMgr, err := DBConfig.ConnectToMongoDB(config.MongoDbConnectionURI)
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB")
@@ -29,10 +31,17 @@ func NewServer(config utils.Config) (*Server, error) {
 	return server, nil
 }
 
-func (s *Server) setupRouter() {
+func (s *Server) SetupRouter() {
 	router := gin.Default()
 	router.GET("/health", controllers.HealthCheck)
+	router.GET("/migrate", func(ctx *gin.Context) {
+		migrate.Migrate(ctx, s.Config.TmdbAPIKey, s.DBMrg.MongoClient)
+	})
 	s.Router = router
+}
+
+func (s *Server) GetRouter() *gin.Engine {
+	return s.Router
 }
 
 // Runs the server on a specific address and port.

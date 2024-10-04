@@ -7,16 +7,18 @@ import (
 	"github.com/mrd1920/ScenePick/src/utils"
 )
 
+var Server *server.Server
+
 func main() {
 	config, err := utils.LoadConfig("./src")
 	if err != nil {
 		log.Fatal("Failed to load config")
 	}
-	server, err := server.NewServer(config)
+	Server, err = server.NewServer(config)
 	if err != nil {
 		log.Fatal("Failed to create server")
 	}
 
-	server.Start(":8080")
+	Server.Start(":8080")
 
 }
