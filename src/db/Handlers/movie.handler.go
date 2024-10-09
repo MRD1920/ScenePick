@@ -1,4 +1,4 @@
-package movieHandler
+package handler
 
 import (
 	"context"
