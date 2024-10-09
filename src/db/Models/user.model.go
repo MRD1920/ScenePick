@@ -9,4 +9,6 @@ type User struct {
 	Password        string             `bson:"password" json:"password" binding:"required"` // Password of the user
 	FavouriteMovies []int              `bson:"favourite_movies" json:"favourite_movies"`    // List of favourite movie IDs
 	WatchLater      []int              `bson:"watch_later" json:"watch_later"`              // List of movie IDs to watch later
+	AccessToken     string             `bson:"access_token" json:"access_token"`            // Access token for the user
+	RefreshToken    string             `bson:"refresh_token" json:"refresh_token"`          // Refresh token for the user
 }
