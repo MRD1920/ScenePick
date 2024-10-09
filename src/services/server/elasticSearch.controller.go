@@ -84,5 +84,5 @@ func (s *Server) searchMoviesInElasticSearch(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"Http Response": response})
+	ctx.JSON(200, response)
 }
