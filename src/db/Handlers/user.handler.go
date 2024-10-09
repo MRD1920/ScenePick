@@ -5,10 +5,11 @@ import (
 	"time"
 
 	models "github.com/mrd1920/ScenePick/src/db/Models"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func findOneUser(mongoClient *mongo.Client, email string) (*models.User, error) {
+func FindOneUser(mongoClient *mongo.Client, email string) (*models.User, error) {
 	//Get the collection
 	collection := mongoClient.Database("ScenePick").Collection("Users")
 
@@ -30,12 +31,12 @@ func findOneUser(mongoClient *mongo.Client, email string) (*models.User, error) 
 	return &user, nil
 }
 
-func insertOneUser(mongoClient *mongo.Client, newUser models.User) (*mongo.InsertOneResult, error) {
+func InsertOneUser(mongoClient *mongo.Client, newUser models.User) (*mongo.InsertOneResult, error) {
 	//Get the collection
 	collection := mongoClient.Database("ScenePick").Collection("Users")
 
 	//Insert the new user
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	result, err := collection.InsertOne(ctx, newUser)
