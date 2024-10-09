@@ -3,10 +3,13 @@ package server
 import (
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mrd1920/ScenePick/src/controllers"
 	migrate "github.com/mrd1920/ScenePick/src/controllers/Migrate"
+	middleware "github.com/mrd1920/ScenePick/src/middlewares"
 	elasticSearch "github.com/mrd1920/ScenePick/src/services/elastic_search"
 
 	DBConfig "github.com/mrd1920/ScenePick/src/db"
@@ -43,12 +46,33 @@ func NewServer(config utils.Config) (*Server, error) {
 
 func (s *Server) SetupRouter() {
 	router := gin.Default()
+	// CORS middleware
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	//Routes
+
 	router.GET("/health", controllers.HealthCheck)
 	router.GET("/migrate", func(ctx *gin.Context) {
 		migrate.Migrate(ctx, s.Config.TmdbAPIKey, s.DBMrg.MongoClient)
 	})
-	router.GET("/transfer", s.transferMoviesToElasticSearch)
-	router.GET("/search", s.searchMoviesInElasticSearch)
+
+	router.Group("/api/v1/", middleware.AuthMiddleware(s.Config.JwtKey))
+	{
+		router.GET("/transfer", s.transferMoviesToElasticSearch)
+		router.GET("/essearch", s.searchMoviesInElasticSearch)
+		router.GET("/searchmovie", s.searchMovie)
+		router.GET("/recommendations", s.getRecommendations)
+
+		//Login routes
+		router.GET("/login", s.login)
+	}
 
 	s.Router = router
 }
