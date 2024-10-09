@@ -7,6 +7,7 @@ type Config struct {
 	TmdbAPIReadAccessToken string `mapstructure:"TMDB_API_READ_ACCESS_TOKEN"`
 	MongoDbConnectionURI   string `mapstructure:"MONGODB_CONNECTION_URI"`
 	ElasticSearchURL       string `mapstructure:"ELASTIC_SEARCH_URL"`
+	JwtKey                 string `mapstructure:"JWT_KEY`
 }
 
 // LoadConfig loads the configuration from the given path
