@@ -4,13 +4,31 @@
 echo "Starting docker-compose services..."
 docker-compose up -d
 
-# Step 2: Wait for Elasticsearch to be healthy
+# # Step 2: Wait for Elasticsearch to be healthy
+# echo "Waiting for Elasticsearch to be healthy..."
+# until [ "$(docker inspect -f {{.State.Health.Status}} elasticsearch)" == "healthy" ]; do
+#     sleep 5
+#     echo "Waiting for Elasticsearch to be ready..."
+# done
+# echo "Elasticsearch is healthy!"
+
+# Step 2: Wait for Elasticsearch to be ready by querying the health endpoint directly
 echo "Waiting for Elasticsearch to be healthy..."
-until [ "$(docker inspect -f {{.State.Health.Status}} elasticsearch)" == "healthy" ]; do
-    sleep 5
-    echo "Waiting for Elasticsearch to be ready..."
+for i in {1..30}; do  # Try up to 30 times
+    if curl --silent --fail http://localhost:9200/_cluster/health; then
+        echo "Elasticsearch is healthy!"
+        break
+    else
+        echo "Waiting for Elasticsearch to be ready..."
+        sleep 5  # Wait for 5 seconds before retrying
+    fi
 done
-echo "Elasticsearch is healthy!"
+
+# Check if we exited the loop because we succeeded
+if [ $? -ne 0 ]; then
+    echo "Elasticsearch did not become healthy in time."
+    exit 1  # Exit with an error code
+fi
 
 # Step 3: Run the create_es_index.sh script to create the Elasticsearch index
 echo "Running the create_es_index.sh script to set up the index..."
