@@ -3,16 +3,20 @@ version: "3.8"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
-    container_name: elasticsearch
+    container_name: elasticsearchContainer
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m # Set JVM heap size (adjust as needed)
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m # Set JVM heap size
     ports:
-      - "9200:9200" # Elasticsearch API
-      - "9300:9300" # Elasticsearch transport
+      - "9200:9200"
+      - "9300:9300"
     volumes:
-      - esdata:/usr/share/elasticsearch/data # Persistent storage for Elasticsearch
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   esdata:
-    driver: local
