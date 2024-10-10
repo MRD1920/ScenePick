@@ -396,6 +396,7 @@ func processOriginalTitle(title interface{}) string {
 
 type queryResponseMovieTitle struct {
 	Title string `json:"title_x"`
+	ID    int    `json:"id"`
 	// Add other fields as needed
 }
 
@@ -422,7 +423,7 @@ func QueryMoviesHTTP(queryString string) ([]queryResponseMovieTitle, error) {
 				"fields": []string{"title_x", "overview", "genres.name", "cast.name", "keywords.name", "production_companies.name", "crew.name"},
 			},
 		},
-		"_source": []string{"title_x"},
+		"_source": []string{"title_x", "id"},
 	}
 
 	// Convert the query payload to JSON
@@ -464,6 +465,8 @@ func QueryMoviesHTTP(queryString string) ([]queryResponseMovieTitle, error) {
 	for _, movie := range movies {
 		fmt.Printf("Movie: %+v\n", movie)
 	}
+
+	log.Println("Movies: ", movies)
 
 	return movies, nil
 }
