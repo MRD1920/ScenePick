@@ -1,16 +1,11 @@
 #!/bin/bash
 
+GO_EXECUTABLE_PATH="C:\Program Files\Go\bin\go.exe" # Update this path to your Go executable
+GO_APP_PATH="./src/main.go"  # Update this path to your Go application
+
 # Step 1: Start the docker-compose services (Elasticsearch and API)
 echo "Starting docker-compose services..."
 docker-compose up -d
-
-# # Step 2: Wait for Elasticsearch to be healthy
-# echo "Waiting for Elasticsearch to be healthy..."
-# until [ "$(docker inspect -f {{.State.Health.Status}} elasticsearch)" == "healthy" ]; do
-#     sleep 5
-#     echo "Waiting for Elasticsearch to be ready..."
-# done
-# echo "Elasticsearch is healthy!"
 
 # Step 2: Wait for Elasticsearch to be ready by querying the health endpoint directly
 echo "Waiting for Elasticsearch to be healthy..."
@@ -34,17 +29,23 @@ fi
 echo "Running the create_es_index.sh script to set up the index..."
 ./create_es_index.sh
 
-# Step 4: Start the Go API server
-echo "Starting the Go API server..."
-go run src/main.go &  # Run the API server in the background to allow the next steps
+# # Step 4: Start the Go API server
+# echo "Starting the Go API server..."
+# go run src/main.go &  # Run the API server in the background to allow the next steps
+
+# Step 4: Start the Go API server using Makefile located one level above
+echo "Starting the Go application using Makefile..."
+powershell.exe -Command "make -C .. run" &  # Run make in the parent directory
+
+sleep 20  # Wait for the API server to start
 
 # Step 5: Wait for the API server to be ready to serve requests (basic health check)
-echo "Waiting for API server to be ready..."
-until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do
-    sleep 5
-    echo "Waiting for API to be ready..."
-done
-echo "API server is ready!"
+# echo "Waiting for API server to be ready..."
+# until $(curl --output /dev/null --silent --head --fail http://localhost:8080/); do
+#     sleep 5
+#     echo "Waiting for API to be ready..."
+# done
+# echo "API server is ready!"
 
 # Step 6: Hit the /api/v1/transfer endpoint to transfer data to Elasticsearch
 echo "Hitting the /api/v1/transfer endpoint to transfer data..."
