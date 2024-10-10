@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mrd1920/ScenePick/src/controllers"
 	migrate "github.com/mrd1920/ScenePick/src/controllers/Migrate"
-	middleware "github.com/mrd1920/ScenePick/src/middlewares"
 	elasticSearch "github.com/mrd1920/ScenePick/src/services/elastic_search"
 
 	DBConfig "github.com/mrd1920/ScenePick/src/db"
@@ -63,15 +62,36 @@ func (s *Server) SetupRouter() {
 		migrate.Migrate(ctx, s.Config.TmdbAPIKey, s.DBMrg.MongoClient)
 	})
 
-	router.Group("/api/v1/", middleware.AuthMiddleware(s.Config.JwtKey))
+	// router.Group("/api/v1/", middleware.AuthMiddleware(s.Config.JwtKey))
+	// {
+	// 	router.GET("/transfer", s.transferMoviesToElasticSearch)
+	// 	router.GET("/essearch", s.searchMoviesInElasticSearch)
+	// 	router.GET("/searchmovie", s.searchMovie)
+	// 	router.GET("/recommendations", s.getRecommendations)
+
+	// 	//Login routes
+	// 	router.POST("/login", s.login)
+	// 	router.POST("/signup", s.signup)
+	// 	// router.GET("/logout", s.logout)
+
+	// 	//Watchlist and Favourites routes
+
+	// }
+
+	api := router.Group("/api/v1/")
 	{
-		router.GET("/transfer", s.transferMoviesToElasticSearch)
-		router.GET("/essearch", s.searchMoviesInElasticSearch)
-		router.GET("/searchmovie", s.searchMovie)
-		router.GET("/recommendations", s.getRecommendations)
+		api.GET("/transfer", s.transferMoviesToElasticSearch)
+		api.GET("/essearch", s.searchMoviesInElasticSearch)
+		api.GET("/searchmovie", s.searchMovie)
+		api.GET("/recommendations", s.getRecommendations)
 
 		//Login routes
-		router.GET("/login", s.login)
+		api.POST("/login", s.login)
+		api.POST("/signup", s.signup)
+		// router.GET("/logout", s.logout)
+
+		//Watchlist and Favourites routes
+
 	}
 
 	s.Router = router
