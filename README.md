@@ -21,6 +21,10 @@ This is a Movie Recommendation System built using Go (Golang) with the Gin frame
 - **Containerization**: Docker
 - **API Documentation**: Swagger (if applicable)
 
+## Video Explanation
+
+https://www.loom.com/share/7671c03d1b714def9bac55371c3b0db7?sid=cec2cd6f-7b90-43b8-a2cf-5a56073e77d0
+
 ## Getting Started
 
 ### Prerequisites
